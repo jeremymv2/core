@@ -45,7 +45,7 @@ pub fn compile_from_package_install(package: &PackageInstall) -> Result<()> {
     let cfg_renderer = config::CfgRenderer::new(pkg.path.join("config"))?;
     cfg_renderer.compile(&pkg.name, &pkg, &ctx)?;
 
-    hooks::HookTable::from_package_install(package).compile(&pkg.name, &ctx);
+    hooks::HookTable::from_package_install(package, None).compile(&pkg.name, &ctx);
 
     Ok(())
 }
