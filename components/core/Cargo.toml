@@ -10,11 +10,13 @@ base64 = "*"
 gcc = "0.3"
 
 [dependencies]
+actix-web = { version = "*", default-features = false }
 ansi_term = "*"
 clippy = {version = "*", optional = true}
 base64 = "*"
 dirs = "*"
 errno = "*"
+handlebars = { version = "= 0.28.3", default-features = false }
 hex = "*"
 lazy_static = "*"
 libarchive = "*"
@@ -27,15 +29,21 @@ rust-crypto = "*"
 serde = "*"
 serde_derive = "*"
 serde_json = "*"
+serde-transcode = "*"
+serde_yaml = "*"
 sodiumoxide = "0.0.16"
 tempfile = "*"
 time = "*"
 toml = { version = "*", default-features = false }
 typemap = "*"
 url = "*"
+valico = "*"
 
 [target.'cfg(not(windows))'.dependencies]
 users = "*"
+
+[target.'cfg(target_os = "linux")'.dependencies]
+caps = "*"
 
 [target.'cfg(windows)'.dependencies]
 ctrlc = "*"
@@ -46,6 +54,7 @@ windows-acl = "*"
 
 [dev-dependencies]
 hyper = "0.10"
+json = "*"
 
 [features]
 default = []

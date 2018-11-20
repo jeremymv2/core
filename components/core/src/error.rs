@@ -37,6 +37,7 @@ pub enum Error {
     /// Occurs when a `habitat_core::package::PackageArchive` is being read.
     ArchiveError(libarchive::error::ArchiveError),
     BadBindingMode(String),
+    BadEnvConfig(String),
     /// An invalid path to a keyfile was given.
     BadKeyPath(String),
     /// An operation expected a composite package
@@ -135,7 +136,7 @@ pub enum Error {
     PackageUnpackFailed(String),
     /// When an error occurs parsing an integer.
     ParseIntError(num::ParseIntError),
-    /// Occurs when setting ownership or permissions on a file or directory fails.
+    /// Occurs upon errors related to file or directory permissions.
     PermissionFailed(String),
     /// Error parsing the contents of a plan file were incomplete or malformed.
     PlanMalformed,
@@ -143,10 +144,20 @@ pub enum Error {
     PrivilegeNotHeld,
     /// When an error occurs parsing or compiling a regular expression.
     RegexParse(regex::Error),
+    /// Whwn an error occurs serializing rendering context
+    RenderContextSerialization(serde_json::Error),
     /// When an error occurs converting a `String` from a UTF-8 byte vector.
     StringFromUtf8Error(string::FromUtf8Error),
     /// When the system target (platform and architecture) do not match the package target.
     TargetMatchError(String),
+    /// When an error occurs registering template file
+    TemplateFileError(handlebars::TemplateFileError),
+    /// When an error occurs rendering template
+    TemplateRenderError(handlebars::RenderError),
+    /// When an error occurs merging toml
+    TomlMergeError(String),
+    /// When an error occurs parsing toml
+    TomlParser(toml::de::Error),
     /// Occurs when a `uname` libc call returns an error.
     UnameFailed(String),
     /// Occurs when a `waitpid` libc call returns an error.
@@ -173,6 +184,9 @@ impl fmt::Display for Error {
         let msg = match *self {
             Error::ArchiveError(ref err) => format!("{}", err),
             Error::BadBindingMode(ref value) => format!("Unknown binding mode '{}'", value),
+            Error::BadEnvConfig(ref varname) => {
+                format!("Unable to find valid TOML or JSON in {} ENVVAR", varname)
+            }
             Error::BadKeyPath(ref e) => format!(
                 "Invalid keypath: {}. Specify an absolute path to a file on disk.",
                 e
@@ -326,8 +340,15 @@ impl fmt::Display for Error {
                  user"
             ),
             Error::RegexParse(ref e) => format!("{}", e),
+            Error::RenderContextSerialization(ref e) => {
+                format!("Unable to serialize rendering context, {}", e)
+            }
             Error::StringFromUtf8Error(ref e) => format!("{}", e),
             Error::TargetMatchError(ref e) => format!("{}", e),
+            Error::TemplateFileError(ref err) => format!("{:?}", err),
+            Error::TemplateRenderError(ref err) => format!("{}", err),
+            Error::TomlMergeError(ref e) => format!("Failed to merge TOML: {}", e),
+            Error::TomlParser(ref err) => format!("Failed to parse TOML: {}", err),
             Error::UnameFailed(ref e) => format!("{}", e),
             Error::WaitpidFailed(ref e) => format!("{}", e),
             Error::SignalFailed(ref r, ref e) => {
@@ -353,6 +374,7 @@ impl error::Error for Error {
         match *self {
             Error::ArchiveError(ref err) => err.description(),
             Error::BadBindingMode(_) => "Unknown binding mode",
+            Error::BadEnvConfig(_) => "Unknown syntax in Env Configuration",
             Error::BadKeyPath(_) => "An absolute path to a file on disk is required",
             Error::CompositePackageExpected(_) => "A composite package was expected",
             Error::ConfigFileIO(_, _) => "Unable to read the raw contents of a configuration file",
@@ -458,10 +480,11 @@ impl error::Error for Error {
             Error::PackageNotFound(_) => "Cannot find a package",
             Error::PackageUnpackFailed(_) => "Package could not be unpacked",
             Error::ParseIntError(_) => "Failed to parse an integer from a string!",
-            Error::PermissionFailed(_) => "Failed to set permissions",
+            Error::PermissionFailed(_) => "File system permissions error",
             Error::PlanMalformed => "Failed to read or parse contents of Plan file",
             Error::PrivilegeNotHeld => "Privilege not held to spawn process as different user",
             Error::RegexParse(_) => "Failed to parse a regular expression",
+            Error::RenderContextSerialization(_) => "Unable to serialize rendering context",
             Error::StringFromUtf8Error(_) => "Failed to convert a string from a Vec<u8> as UTF-8",
             Error::TargetMatchError(_) => "System target does not match package target",
             Error::UnameFailed(_) => "uname failed",
@@ -470,7 +493,11 @@ impl error::Error for Error {
             Error::WaitpidFailed(_) => "waitpid failed",
             Error::GetExitCodeProcessFailed(_) => "GetExitCodeProcess failed",
             Error::WaitForSingleObjectFailed(_) => "WaitForSingleObjectFailed failed",
+            Error::TemplateFileError(ref err) => err.description(),
+            Error::TemplateRenderError(ref err) => err.description(),
             Error::TerminateProcessFailed(_) => "Failed to call TerminateProcess",
+            Error::TomlMergeError(_) => "Failed to merge TOML!",
+            Error::TomlParser(_) => "Failed to parse TOML!",
             Error::Utf8Error(_) => "Failed to interpret a sequence of bytes as a string",
             Error::WrongActivePackageTarget(_, _) => {
                 "Package target is not supported as this system has a different \
@@ -519,5 +546,11 @@ impl From<num::ParseIntError> for Error {
 impl From<regex::Error> for Error {
     fn from(err: regex::Error) -> Self {
         Error::RegexParse(err)
+    }
+}
+
+impl From<handlebars::TemplateFileError> for Error {
+    fn from(err: handlebars::TemplateFileError) -> Self {
+        Error::TemplateFileError(err)
     }
 }

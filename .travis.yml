@@ -28,6 +28,7 @@ matrix:
             - kalakris-cmake
           packages:
             - build-essential
+            - busybox
             - ca-certificates
             - cmake
             - curl

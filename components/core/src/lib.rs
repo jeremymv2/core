@@ -15,13 +15,17 @@
 #![cfg_attr(feature = "clippy", feature(plugin))]
 #![cfg_attr(feature = "clippy", plugin(clippy))]
 
+extern crate actix_web;
 extern crate ansi_term;
 extern crate base64;
 extern crate crypto as rust_crypto;
+#[cfg(target_os = "linux")]
+extern crate caps;
 #[cfg(windows)]
 extern crate ctrlc;
 extern crate dirs;
 extern crate errno;
+extern crate handlebars;
 extern crate hex;
 #[cfg(test)]
 extern crate hyper;
@@ -35,12 +39,16 @@ extern crate log;
 extern crate rand;
 extern crate regex;
 extern crate serde;
+extern crate serde_transcode;
+extern crate serde_yaml;
 extern crate tempfile;
 #[macro_use]
 extern crate serde_derive;
 
 // This is a little gross, but we only need the macros in tests right
 // now.
+#[cfg(test)]
+extern crate json;
 #[cfg(test)]
 #[macro_use]
 extern crate serde_json;
@@ -55,6 +63,7 @@ extern crate url as extern_url;
 
 #[cfg(not(windows))]
 extern crate users as linux_users;
+extern crate valico;
 
 #[cfg(windows)]
 extern crate habitat_win_users;
@@ -76,9 +85,11 @@ pub mod error;
 pub mod event;
 pub mod fs;
 pub mod os;
+#[macro_use]
 pub mod output;
 pub mod package;
 pub mod service;
+pub mod templating;
 pub mod url;
 pub mod util;
 
