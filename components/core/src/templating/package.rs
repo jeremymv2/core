@@ -43,9 +43,6 @@ impl Deref for Env {
     }
 }
 
-// Convenience implementation for ease of setting up test instances;
-// real code should use `Env::new`
-#[cfg(test)]
 impl From<HashMap<String, String>> for Env {
     fn from(inner_map: HashMap<String, String>) -> Self {
         Env(inner_map)
