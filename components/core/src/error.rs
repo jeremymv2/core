@@ -179,9 +179,6 @@ pub enum Error {
     WrongActivePackageTarget(package::PackageTarget, package::PackageTarget),
 }
 
-unsafe impl Send for Error {}
-unsafe impl Sync for Error {}
-
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let msg = match *self {

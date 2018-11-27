@@ -1028,10 +1028,7 @@ impl HookTable {
     pub fn from_package_install(package: &PackageInstall, config_from: Option<&PathBuf>) -> Self {
         Self::load(
             &package.ident.name,
-            config_from
-                .and_then(|p| Some(p.as_path()))
-                .unwrap_or(&package.installed_path)
-                .join("hooks"),
+            config_from.unwrap_or(&package.installed_path).join("hooks"),
             fs::svc_hooks_path(package.ident.name.clone()),
         )
     }
