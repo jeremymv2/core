@@ -37,6 +37,7 @@ pub enum Error {
     /// Occurs when a `habitat_core::package::PackageArchive` is being read.
     ArchiveError(libarchive::error::ArchiveError),
     BadBindingMode(String),
+    /// Occurs when there is no valid toml of json in the environment variable
     BadEnvConfig(String),
     /// An invalid path to a keyfile was given.
     BadKeyPath(String),
@@ -144,7 +145,7 @@ pub enum Error {
     PrivilegeNotHeld,
     /// When an error occurs parsing or compiling a regular expression.
     RegexParse(regex::Error),
-    /// Whwn an error occurs serializing rendering context
+    /// When an error occurs serializing rendering context
     RenderContextSerialization(serde_json::Error),
     /// When an error occurs converting a `String` from a UTF-8 byte vector.
     StringFromUtf8Error(string::FromUtf8Error),
