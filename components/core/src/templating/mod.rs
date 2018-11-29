@@ -80,7 +80,7 @@ impl TemplateRenderer {
         debug!("Rendering template with context, {}, {}", template, raw);
         self.0
             .render(template, &raw)
-            .map_err(|e| Error::TemplateRenderError(e))
+            .map_err(|e| Error::TemplateRenderError(format!("{}", e)))
     }
 }
 

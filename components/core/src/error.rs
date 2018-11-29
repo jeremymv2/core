@@ -154,7 +154,13 @@ pub enum Error {
     /// When an error occurs registering template file
     TemplateFileError(handlebars::TemplateFileError),
     /// When an error occurs rendering template
-    TemplateRenderError(handlebars::RenderError),
+    /// The error is constructed with a handlebars::RenderError's format string instead
+    /// of the handlebars::RenderError itself because the cause field of the
+    /// handlebars::RenderError in the handlebars crate version we use implements send
+    /// and not sync which can lead to upstream compile errors when dealing with the
+    /// failure crate.
+    /// See https://github.com/sunng87/handlebars-rust/issues/194
+    TemplateRenderError(String),
     /// When an error occurs merging toml
     TomlMergeError(String),
     /// When an error occurs parsing toml
@@ -347,7 +353,7 @@ impl fmt::Display for Error {
             Error::StringFromUtf8Error(ref e) => format!("{}", e),
             Error::TargetMatchError(ref e) => format!("{}", e),
             Error::TemplateFileError(ref err) => format!("{:?}", err),
-            Error::TemplateRenderError(ref err) => format!("{}", err),
+            Error::TemplateRenderError(ref e) => format!("{}", e),
             Error::TomlMergeError(ref e) => format!("Failed to merge TOML: {}", e),
             Error::TomlParser(ref err) => format!("Failed to parse TOML: {}", err),
             Error::UnameFailed(ref e) => format!("{}", e),
@@ -495,7 +501,7 @@ impl error::Error for Error {
             Error::GetExitCodeProcessFailed(_) => "GetExitCodeProcess failed",
             Error::WaitForSingleObjectFailed(_) => "WaitForSingleObjectFailed failed",
             Error::TemplateFileError(ref err) => err.description(),
-            Error::TemplateRenderError(ref err) => err.description(),
+            Error::TemplateRenderError(_) => "Failed to render template",
             Error::TerminateProcessFailed(_) => "Failed to call TerminateProcess",
             Error::TomlMergeError(_) => "Failed to merge TOML!",
             Error::TomlParser(_) => "Failed to parse TOML!",
