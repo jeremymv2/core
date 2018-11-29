@@ -158,8 +158,8 @@ pub enum Error {
     /// of the handlebars::RenderError itself because the cause field of the
     /// handlebars::RenderError in the handlebars crate version we use implements send
     /// and not sync which can lead to upstream compile errors when dealing with the
-    /// failure crate.
-    /// See https://github.com/sunng87/handlebars-rust/issues/194
+    /// failure crate. We should change this to a RenderError after we update the
+    /// handlebars crate. See https://github.com/sunng87/handlebars-rust/issues/194
     TemplateRenderError(String),
     /// When an error occurs merging toml
     TomlMergeError(String),
