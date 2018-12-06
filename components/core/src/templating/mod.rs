@@ -30,6 +30,7 @@ use serde_json;
 use error::{Error, Result};
 use fs;
 use package::PackageInstall;
+use templating::hooks::{Hook, InstallHook};
 
 pub use self::context::RenderContext;
 
@@ -43,7 +44,12 @@ pub fn compile_from_package_install(package: &PackageInstall) -> Result<()> {
     let cfg_renderer = config::CfgRenderer::new(pkg.path.join("config"))?;
     cfg_renderer.compile(&pkg.name, &pkg, &ctx)?;
 
-    //hooks::HookTable::from_package_install(package, None).compile(&pkg.name, &ctx);
+    if let Some(ref hook) = InstallHook::load(
+            &pkg.name,
+            &package.installed_path.join("hooks"),
+            &fs::svc_hooks_path(&pkg.name)) {
+                hook.compile(&pkg.name, &ctx)?;
+            };
 
     Ok(())
 }
