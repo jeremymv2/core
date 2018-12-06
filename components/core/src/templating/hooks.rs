@@ -53,7 +53,7 @@ where
 }
 
 #[derive(Debug, Copy, Clone)]
-pub struct ExitCode(i32);
+pub struct ExitCode(pub i32);
 
 impl Default for ExitCode {
     fn default() -> ExitCode {

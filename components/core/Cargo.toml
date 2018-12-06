@@ -10,7 +10,6 @@ base64 = "*"
 gcc = "0.3"
 
 [dependencies]
-actix-web = { version = "*", default-features = false }
 ansi_term = "*"
 clippy = {version = "*", optional = true}
 base64 = "*"

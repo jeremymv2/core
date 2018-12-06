@@ -15,7 +15,6 @@
 #![cfg_attr(feature = "clippy", feature(plugin))]
 #![cfg_attr(feature = "clippy", plugin(clippy))]
 
-extern crate actix_web;
 extern crate ansi_term;
 extern crate base64;
 extern crate crypto as rust_crypto;
