@@ -17,7 +17,6 @@ mod context;
 pub mod helpers;
 pub mod hooks;
 pub mod package;
-#[cfg(test)]
 pub mod test_helpers;
 
 use std::fmt;

@@ -46,7 +46,6 @@ extern crate serde_derive;
 
 // This is a little gross, but we only need the macros in tests right
 // now.
-#[cfg(test)]
 extern crate json;
 #[cfg(test)]
 #[macro_use]

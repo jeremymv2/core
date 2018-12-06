@@ -26,6 +26,7 @@ errno = "*"
 #   See https://github.com/sunng87/handlebars-rust/commit/707f05442ef6f441a1cfc6b13ac180b78cb296db
 handlebars = { version = "= 0.28.3", default-features = false }
 hex = "*"
+json = "*"
 lazy_static = "*"
 libarchive = "*"
 libc = "*"
@@ -62,7 +63,6 @@ windows-acl = "*"
 
 [dev-dependencies]
 hyper = "0.10"
-json = "*"
 
 [features]
 default = []
