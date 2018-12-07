@@ -249,6 +249,11 @@ pub fn svc_config_path<T: AsRef<Path>>(service_name: T) -> PathBuf {
     svc_path(service_name).join("config")
 }
 
+/// Returns the path to the install configuration directory for a given service.
+pub fn svc_config_install_path<T: AsRef<Path>>(service_name: T) -> PathBuf {
+    svc_path(service_name).join("config_install")
+}
+
 /// Returns the path to a given service's data.
 pub fn svc_data_path<T: AsRef<Path>>(service_name: T) -> PathBuf {
     svc_path(service_name).join("data")
@@ -366,6 +371,7 @@ impl<'a> SvcDir<'a> {
     /// instead.
     fn create_all_svc_owned_dirs(&self) -> Result<()> {
         self.create_svc_owned_dir(svc_config_path(&self.service_name))?;
+        self.create_svc_owned_dir(svc_config_install_path(&self.service_name))?;
         self.create_svc_owned_dir(svc_data_path(&self.service_name))?;
         self.create_svc_owned_dir(svc_files_path(&self.service_name))?;
         self.create_svc_owned_dir(svc_var_path(&self.service_name))?;

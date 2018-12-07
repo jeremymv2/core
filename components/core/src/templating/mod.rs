@@ -34,20 +34,21 @@ use templating::hooks::{Hook, InstallHook};
 
 pub use self::context::RenderContext;
 
-pub fn compile_from_package_install(package: &PackageInstall) -> Result<()> {
+pub fn compile_for_package_install(package: &PackageInstall) -> Result<()> {
     let pkg = package::Pkg::from_install(package.clone())?;
 
     fs::SvcDir::new(&pkg.name, &pkg.svc_user, &pkg.svc_group).create()?;
 
     let cfg = config::Cfg::new(&pkg, None)?;
     let ctx = RenderContext::new(&pkg, &cfg);
-    let cfg_renderer = config::CfgRenderer::new(pkg.path.join("config"))?;
-    cfg_renderer.compile(&pkg.name, &pkg, &ctx)?;
+    let cfg_renderer = config::CfgRenderer::new(pkg.path.join("config_install"))?;
+    cfg_renderer.compile(&pkg.name, &pkg, &pkg.svc_config_install_path, &ctx)?;
 
     if let Some(ref hook) = InstallHook::load(
             &pkg.name,
-            &package.installed_path.join("hooks"),
-            &fs::svc_hooks_path(&pkg.name)) {
+            &fs::svc_hooks_path(&pkg.name),
+            &package.installed_path.join("hooks")) {
+                println!("compiling install hook");
                 hook.compile(&pkg.name, &ctx)?;
             };
 
@@ -391,25 +392,25 @@ test: something"#
         let hooks_path = root.join("hooks");
         std::fs::create_dir_all(&hooks_path).unwrap();
         create_with_content(
-            hooks_path.join("init"),
-            &String::from("init message is {{cfg.message}}"),
+            hooks_path.join("install"),
+            &String::from("install message is {{cfg.message}}"),
         );
-        let config_path = root.join("config");
+        let config_path = root.join("config_install");
         std::fs::create_dir_all(&config_path).unwrap();
         create_with_content(
             config_path.join("config.txt"),
             &String::from("config message is {{cfg.message}}"),
         );
 
-        compile_from_package_install(&pkg_install).expect("compile package");
+        compile_for_package_install(&pkg_install).expect("compile package");
 
         assert_eq!(
-            file_content(fs::svc_config_path(&pkg_install.ident().name).join("config.txt")),
+            file_content(fs::svc_config_install_path(&pkg_install.ident().name).join("config.txt")),
             "config message is Hello"
         );
         assert_eq!(
-            file_content(fs::svc_hooks_path(&pkg_install.ident().name).join("init")),
-            "init message is Hello"
+            file_content(fs::svc_hooks_path(&pkg_install.ident().name).join("install")),
+            "install message is Hello"
         );
 
         env::remove_var(fs::FS_ROOT_ENVVAR);

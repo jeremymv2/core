@@ -484,8 +484,9 @@ impl CfgRenderer {
     /// Compile and write all configuration files to the configuration directory.
     ///
     /// Returns `true` if the configuration has changed.
-    pub fn compile<T>(&self, service_group_name: &str, pkg: &Pkg, ctx: &T) -> Result<bool>
+    pub fn compile<P, T>(&self, service_group_name: &str, pkg: &Pkg, render_path: P, ctx: &T) -> Result<bool>
     where
+        P: AsRef<Path>,
         T: Serialize,
     {
         // JW TODO: This function is loaded with IO errors that will be converted a Supervisor
@@ -497,7 +498,7 @@ impl CfgRenderer {
         for (template, _) in self.0.get_templates() {
             let compiled = self.0.render(&template, ctx)?;
             let compiled_hash = crypto::hash::hash_string(&compiled);
-            let cfg_dest = pkg.svc_config_path.join(&template);
+            let cfg_dest = render_path.as_ref().join(&template);
             let file_hash = match crypto::hash::hash_file(&cfg_dest) {
                 Ok(file_hash) => file_hash,
                 Err(e) => {

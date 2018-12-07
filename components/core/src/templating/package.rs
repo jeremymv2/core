@@ -91,6 +91,7 @@ pub struct Pkg {
     pub path: PathBuf,
     pub svc_path: PathBuf,
     pub svc_config_path: PathBuf,
+    pub svc_config_install_path: PathBuf,
     pub svc_data_path: PathBuf,
     pub svc_files_path: PathBuf,
     pub svc_static_path: PathBuf,
@@ -107,6 +108,7 @@ impl Pkg {
         let pkg = Pkg {
             svc_path: fs::svc_path(&package.ident.name),
             svc_config_path: fs::svc_config_path(&package.ident.name),
+            svc_config_install_path: fs::svc_config_install_path(&package.ident.name),
             svc_data_path: fs::svc_data_path(&package.ident.name),
             svc_files_path: fs::svc_files_path(&package.ident.name),
             svc_run: fs::svc_path(&package.ident.name).join("run"),
@@ -172,6 +174,7 @@ impl<'a> Serialize for PkgProxy<'a> {
         strukt.serialize_field("path", &p.path)?;
         strukt.serialize_field("svc_path", &p.svc_path)?;
         strukt.serialize_field("svc_config_path", &p.svc_config_path)?;
+        strukt.serialize_field("svc_config_install_path", &p.svc_config_install_path)?;
         strukt.serialize_field("svc_data_path", &p.svc_data_path)?;
         strukt.serialize_field("svc_files_path", &p.svc_files_path)?;
         strukt.serialize_field("svc_static_path", &p.svc_static_path)?;
