@@ -739,7 +739,8 @@ echo "The message is Hello"
     #[test]
     #[cfg(not(windows))]
     fn hook_output() {
-        use std::fs::{self, DirBuilder};
+        use std::fs as stdfs;
+        use std::fs::DirBuilder;
         use std::process::{Command, Stdio};
 
         let tmp_dir = TempDir::new().expect("create temp dir");
