@@ -45,12 +45,12 @@ pub fn compile_for_package_install(package: &PackageInstall) -> Result<()> {
     cfg_renderer.compile(&pkg.name, &pkg, &pkg.svc_config_install_path, &ctx)?;
 
     if let Some(ref hook) = InstallHook::load(
-            &pkg.name,
-            &fs::svc_hooks_path(&pkg.name),
-            &package.installed_path.join("hooks")) {
-                println!("compiling install hook");
-                hook.compile(&pkg.name, &ctx)?;
-            };
+        &pkg.name,
+        &fs::svc_hooks_path(&pkg.name),
+        &package.installed_path.join("hooks"),
+    ) {
+        hook.compile(&pkg.name, &ctx)?;
+    };
 
     Ok(())
 }

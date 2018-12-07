@@ -505,6 +505,14 @@ mod tests {
 
     as_ref_path_impl!(InstallHook);
 
+    #[cfg(not(windows))]
+    fn hook_fixtures_path() -> PathBuf {
+        PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .join("tests")
+            .join("fixtures")
+            .join("hooks")
+    }
+
     fn hook_templates_path() -> PathBuf {
         PathBuf::from(env!("CARGO_MANIFEST_DIR"))
             .join("tests")
@@ -731,7 +739,7 @@ echo "The message is Hello"
     #[test]
     #[cfg(not(windows))]
     fn hook_output() {
-        use std::fs::DirBuilder;
+        use std::fs::{self, DirBuilder};
         use std::process::{Command, Stdio};
 
         let tmp_dir = TempDir::new().expect("create temp dir");
@@ -775,6 +783,6 @@ echo "The message is Hello"
             .expect("couldn't read stderr");
         assert_eq!(stderr, "This is stderr\n");
 
-        fs::remove_dir_all(tmp_dir).expect("remove temp dir");
+        stdfs::remove_dir_all(tmp_dir).expect("remove temp dir");
     }
 }

@@ -484,7 +484,13 @@ impl CfgRenderer {
     /// Compile and write all configuration files to the configuration directory.
     ///
     /// Returns `true` if the configuration has changed.
-    pub fn compile<P, T>(&self, service_group_name: &str, pkg: &Pkg, render_path: P, ctx: &T) -> Result<bool>
+    pub fn compile<P, T>(
+        &self,
+        service_group_name: &str,
+        pkg: &Pkg,
+        render_path: P,
+        ctx: &T,
+    ) -> Result<bool>
     where
         P: AsRef<Path>,
         T: Serialize,
